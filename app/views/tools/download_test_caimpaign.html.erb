@@ -1,0 +1,7 @@
+<% @test_caimpaigns.each do |test_caimpaign| %>
+	<div>
+		<%= test_caimpaign.name %>
+		<%= link_to "Export Data", test_caimpaign_export_path(id: test_caimpaign.id,format: "csv") %>
+	</div>
+<% end %>
+<%= link_to "Create new Caimpaign", tools_check_caimpaign_path %>

@@ -1,0 +1,7 @@
+<h1>Tools#check_caimpaign</h1>
+<%= form_tag({action: :check_caimpaign}, multipart: true) do %>
+	<%= 'Caimpaign Name' %>
+	<%= text_field_tag 'name' %>
+  <%= file_field_tag 'csv_file' %>
+  <%= submit_tag 'Submit' %>
+<% end %>
