@@ -25,7 +25,7 @@ test:
   <<: *default
   username: rails
   password: SEcJ0qQVcO
-  database: check_caimpaigns
+  database: tools
   
 production:
   <<: *default

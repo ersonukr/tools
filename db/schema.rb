@@ -13,37 +13,37 @@
 
 ActiveRecord::Schema.define(version: 20160625075612) do
 
-  create_table "delayed_jobs", force: :cascade do |t|
-    t.integer  "priority",   limit: 4,     default: 0, null: false
-    t.integer  "attempts",   limit: 4,     default: 0, null: false
-    t.text     "handler",    limit: 65535,             null: false
-    t.text     "last_error", limit: 65535
+  create_table "delayed_jobs", force: true do |t|
+    t.integer  "priority",   default: 0, null: false
+    t.integer  "attempts",   default: 0, null: false
+    t.text     "handler",                null: false
+    t.text     "last_error"
     t.datetime "run_at"
     t.datetime "locked_at"
     t.datetime "failed_at"
-    t.string   "locked_by",  limit: 255
-    t.string   "queue",      limit: 255
+    t.string   "locked_by"
+    t.string   "queue"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority", using: :btree
 
-  create_table "test_caimpaign_statuses", force: :cascade do |t|
-    t.string   "sid",               limit: 255
-    t.string   "phone",             limit: 255
-    t.string   "status",            limit: 255
-    t.integer  "attempt_no",        limit: 4
-    t.string   "sid_created_at",    limit: 255
-    t.integer  "test_caimpaign_id", limit: 4
-    t.datetime "created_at",                    null: false
-    t.datetime "updated_at",                    null: false
+  create_table "test_caimpaign_statuses", force: true do |t|
+    t.string   "sid"
+    t.string   "phone"
+    t.string   "status"
+    t.integer  "attempt_no"
+    t.string   "sid_created_at"
+    t.integer  "test_caimpaign_id"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
   end
 
-  create_table "test_caimpaigns", force: :cascade do |t|
-    t.string   "name",       limit: 255
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+  create_table "test_caimpaigns", force: true do |t|
+    t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
 end
