@@ -31,10 +31,14 @@ class TestCaimpaignStatus < ActiveRecord::Base
         if connect_call.present?
           s_ids << connect_call.sid
         else
-          message = "Exotel is not responding for 100379 app"
+          message = "Exotel is not responding for 100379 app and last phone is #{phone}"
           UnnatiMailer.delay(run_at: 10.seconds.from_now, queue: 'email').system_notification(message,"Admin")
         end
   		end
+      if phones.count != s_ids.count
+        message = "sid is not generated for all phones"
+        UnnatiMailer.delay(run_at: 10.seconds.from_now, queue: 'email').system_notification(message,"Admin")
+      end
   		return s_ids
   	end	
   end
