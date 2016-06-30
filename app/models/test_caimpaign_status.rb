@@ -29,11 +29,11 @@ class TestCaimpaignStatus < ActiveRecord::Base
         when (0..7)
           sleeping_time = Time.now.change({:hour => 8, :minute => 00}) - Time.now
         end
-        if phone_counter == 200
+        if phone_counter == 100
           loop_end_time = Time.now
           duration = loop_end_time - loop_start_time
           if duration <= 60
-            sleeping_duration = 61 - duration
+            sleeping_duration = 60 - duration
             sleep(sleeping_duration)
             phone_counter = nil 
             loop_start_time = Time.now
