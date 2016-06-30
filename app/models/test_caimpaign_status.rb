@@ -15,7 +15,10 @@ class TestCaimpaignStatus < ActiveRecord::Base
   def self.connect_phones(phones)
   	if phones.present?
   		s_ids = Array.new
+      phone_counter = 0
+      loop_start_time = Time.now
       phones.each do |phone|
+        phone_counter += 1
         sleeping_time = nil
         time = Time.now.hour
         case time
@@ -25,6 +28,16 @@ class TestCaimpaignStatus < ActiveRecord::Base
           sleeping_time = (Time.now + 1.day).change({:hour => 8, :minute => 00}) - Time.now
         when (0..7)
           sleeping_time = Time.now.change({:hour => 8, :minute => 00}) - Time.now
+        end
+        if phone_counter == 200
+          loop_end_time = Time.now
+          duration = loop_end_time - loop_start_time
+          if duration <= 60
+            sleeping_duration = 61 - duration
+            sleep(sleeping_duration)
+            phone_counter = nil 
+            loop_start_time = Time.now
+          end
         end
         sleep(sleeping_time)
         connect_call = Exotel::Call.connect_to_flow(:to => '01139585681', :from => phone, :caller_id => '01139585221', :call_type => 'trans', :flow_id => '100379')
