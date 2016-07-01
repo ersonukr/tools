@@ -42,7 +42,13 @@ class TestCaimpaignStatus < ActiveRecord::Base
         sleep(sleeping_time)
         connect_call = Exotel::Call.connect_to_flow(:to => '01139585681', :from => phone, :caller_id => '01139585221', :call_type => 'trans', :flow_id => '100379')
         if connect_call.present?
-          s_ids << connect_call.sid
+          s_id = connect_call.sid rescue nil
+          if s_id.present?
+            s_ids << s_id
+          else
+            message = "Exotel did not generate sid for this #{phone} number"
+            UnnatiMailer.delay(run_at: 10.seconds.from_now, queue: 'email').system_notification(message,"Admin")
+          end
         else
           message = "Exotel is not responding for 100379 app and last phone is #{phone}"
           UnnatiMailer.delay(run_at: 10.seconds.from_now, queue: 'email').system_notification(message,"Admin")
