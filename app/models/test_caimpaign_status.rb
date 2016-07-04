@@ -15,6 +15,7 @@ class TestCaimpaignStatus < ActiveRecord::Base
   def self.connect_phones(phones)
   	if phones.present?
   		s_ids = Array.new
+      not_connected_phone = Array.new
       phone_counter = 0
       loop_start_time = Time.now
       phones.each do |phone|
@@ -33,6 +34,7 @@ class TestCaimpaignStatus < ActiveRecord::Base
           loop_end_time = Time.now
           duration = loop_end_time - loop_start_time
           if duration <= 60
+            sleeping_duration = nil
             sleeping_duration = 60 - duration
             sleep(sleeping_duration)
             phone_counter = nil 
@@ -40,23 +42,22 @@ class TestCaimpaignStatus < ActiveRecord::Base
           end
         end
         sleep(sleeping_time)
-        connect_call = Exotel::Call.connect_to_flow(:to => '01139585681', :from => phone, :caller_id => '01139585221', :call_type => 'trans', :flow_id => '100379')
+        connect_call = Exotel::Call.connect_to_flow(:to => '01139585681', :from => phone, :caller_id => '01139585221', :call_type => 'trans', :flow_id => '100379') rescue false
         if connect_call.present?
           s_id = connect_call.sid rescue nil
           if s_id.present?
             s_ids << s_id
           else
             message = "Exotel did not generate sid for this #{phone} number"
-            UnnatiMailer.delay(run_at: 10.seconds.from_now, queue: 'email').system_notification(message,"Admin")
+            UnnatiMailer.delay(run_at: 10.seconds.from_now, queue: 'email').system_notification(message,"Developer")
           end
         else
-          message = "Exotel is not responding for 100379 app and last phone is #{phone}"
-          UnnatiMailer.delay(run_at: 10.seconds.from_now, queue: 'email').system_notification(message,"Admin")
+          not_connected_phone << phone
         end
   		end
       if phones.count != s_ids.count
-        message = "sid is not generated for all phones"
-        UnnatiMailer.delay(run_at: 10.seconds.from_now, queue: 'email').system_notification(message,"Admin")
+        message = "sid is not generated for all phones and not connected phones is #{not_connected_phone}"
+        UnnatiMailer.delay(run_at: 10.seconds.from_now, queue: 'email').system_notification(message,"Developer")
       end
   		return s_ids
   	end	
@@ -65,9 +66,24 @@ class TestCaimpaignStatus < ActiveRecord::Base
   def self.check_failed_phones(sids, counter, caimpaign)
   	if sids.present?
   		failed_phones = Array.new
+      nil_response_sids = Array.new
+      sids_counter = 0
+      loop_start_time = Time.now
   		sids.each do |s_id|
 	  		if s_id.present?
-					response = Exotel::Call.details(s_id)
+          sids_counter += 1
+          if sids_counter == 100
+            loop_end_time = Time.now
+            duration = loop_end_time - loop_start_time
+            if duration <= 60
+              sleeping_duration = nil
+              sleeping_duration = 60 - duration
+              sleep(sleeping_duration)
+              sids_counter = nil 
+              loop_start_time = Time.now
+            end
+          end
+					response = Exotel::Call.details(s_id) rescue false
 					if response.present?
 						phone = response.from rescue nil
 						status = response.status rescue nil
@@ -77,14 +93,17 @@ class TestCaimpaignStatus < ActiveRecord::Base
 							failed_phones << phone
 						end
 					else
-						message = "Exotel response is not present for #{s_id}"
-	        	UnnatiMailer.delay(run_at: 10.seconds.from_now, queue: 'email').system_notification(message,"Admin")
+            nil_response_sids << s_id
 					end
 				else
 					message = "sid is not present"
-	        UnnatiMailer.delay(run_at: 10.seconds.from_now, queue: 'email').system_notification(message,"Admin")
+	        UnnatiMailer.delay(run_at: 10.seconds.from_now, queue: 'email').system_notification(message,"Developer")
 				end
 	  	end
+      if nil_response_sids.present?
+        message = "Exotel response is not present for these sids #{nil_response_sids}"
+        UnnatiMailer.delay(run_at: 10.seconds.from_now, queue: 'email').system_notification(message,"Developer")
+      end
 	  	return failed_phones
   	end
   end

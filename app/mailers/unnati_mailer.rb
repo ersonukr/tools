@@ -14,6 +14,8 @@ class UnnatiMailer < ActionMailer::Base
     case group
     when "Admin"
       email_addresses = "aashutosh@unnatihelpers.com"
+    when "Developer"
+      email_addresses = "un4@unnatihelpers.com"
     when "Manager"
       email_addresses = "shantanu@unnatihelpers.com,ravi@unnatihelpers.com,diya@unnatihelpers.com"
     when "Interview"
