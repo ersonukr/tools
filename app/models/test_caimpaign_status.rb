@@ -124,6 +124,7 @@ class TestCaimpaignStatus < ActiveRecord::Base
   	end
   end
 
+  
 
 	def self.to_csv(options = {})
     CSV.generate(options) do |csv|

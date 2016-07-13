@@ -7,6 +7,10 @@ Rails.application.routes.draw do
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
+  get 'tools/check_call_duration'
+  post 'tools/check_call_duration'
+  get 'download_call_duration', to: 'tools#download_call_duration', as: :download_call_duration
+  get 'export_call_duration', to: 'tools#export_call_duration', as: :export_call_duration
   # You can have the root of your site routed with "root"
   # root 'welcome#index'
 
